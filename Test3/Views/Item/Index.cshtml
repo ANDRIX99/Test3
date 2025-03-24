@@ -1,0 +1,18 @@
+﻿@model IEnumerable<Item>
+
+@{
+	ViewData["Title"] = "Item list";
+}
+
+<h1>Item list</h1>
+
+<div class="container">
+	<a asp-controller="Item" asp-action="AddItem" >Aggiungi</a>
+</div>
+
+<ul>
+	@foreach (var item in Model)
+	{
+		<li>@item.Nome <a asp-controller="Item" asp-action="Detail">Dettagli</a> <a asp-controller="Item" asp-action="DeleteItem" >Delete</a> <a asp-controller="Item" asp-action="EditItem" >Edit</a></li>
+	}
+</ul>

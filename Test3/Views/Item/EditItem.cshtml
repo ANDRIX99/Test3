@@ -1,0 +1,17 @@
+﻿@model Item
+
+@{
+	ViewData["Title"] = "Edit Item";
+}
+
+<h1>@ViewData["title"]</h1>
+
+<form asp-action="EditItem" asp-action="post" >
+	<input type="hidden" name="Id" value="@Model.Id" /> <!-- Used to update an Item by her id -->
+	<input type="text" name="Nome" asp-for="Nome" />
+	<input type="submit" />
+</form>
+
+@section Scripts {
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
