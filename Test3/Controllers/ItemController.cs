@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Test3.Models;
@@ -14,21 +15,25 @@ namespace Test3.Controllers
             _client = client;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var item = new List<Item>
-            {
-                new Item { Id = 1, Nome = "Item 1" },
-                new Item { Id = 2, Nome = "Item 2" },
-                new Item { Id = 3, Nome = "Item 3" },
-            };
+            string url = "https://localhost:7069/api/Item";
 
-            return View(item);
+            List<Item> items = await _client.GetFromJsonAsync<List<Item>>(url);
+
+            return View(items);
         }
 
-        public IActionResult Detail()
+        public async Task<IActionResult> Detail(int id)
         {
-            var item = new Item { Id = 1, Nome = "Item 1" };
+            if (id <= 0) return BadRequest();
+
+            var response = await _client.GetAsync($"https://localhost:7069/api/Item/{id}");
+
+            if (!response.IsSuccessStatusCode) return NotFound();
+
+            var json = await response.Content.ReadAsStringAsync();
+            var item = JsonConvert.DeserializeObject<Item>(json);
 
             return View(item);
         }
@@ -43,7 +48,7 @@ namespace Test3.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _client.PostAsJsonAsync("https://localhost:7069/scalar/#tag/item/POST/api/Item", newItem); // change this to the correct URL
+                var response = await _client.PostAsJsonAsync("https://localhost:7069/api/Item", newItem);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -56,41 +61,77 @@ namespace Test3.Controllers
             return View(newItem);
         }
 
-        public IActionResult EditItem()
+        public async Task<IActionResult> EditItem(int id)
         {
-            return View();
+            if (id <= 0) return BadRequest();
+
+            var response = await _client.GetAsync($"https://localhost:7069/api/Item/{id}");
+            if (!response.IsSuccessStatusCode) return NotFound();
+
+            var json = await response.Content.ReadAsStringAsync();
+            var item = JsonConvert.DeserializeObject<Item>(json);
+
+            return View(item);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> EditItem(Item item)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditItem(int id, Item item)
         {
-            string url = $"https://localhost:7069/scalar/#tag/item/PUT/api/Item/{item.Id}"; // change this to the correct URL
-            var response = await _client.PutAsJsonAsync(url, item);
-
-            if (response.IsSuccessStatusCode) return RedirectToAction("Index");
-
-            ModelState.AddModelError("", "Error while updating item");
-            return RedirectToAction("Index");
-        }
-
-        public IActionResult DeleteItem()
-        {
-            return View();
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteItem(int id)
-        {
-            string url = $"https://localhost:7069/scalar/#tag/item/DELETE/api/Item/{id}"; // change this to the correct URL
-            var response = await _client.DeleteAsync(url);
-
-            if (response.IsSuccessStatusCode)
+            if (id != item.Id) return BadRequest();
+            if (ModelState.IsValid)
             {
-                return RedirectToAction("Index");
+                var json = JsonConvert.SerializeObject(item);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _client.PutAsync($"https://localhost:7069/api/Item/{id}", content);  // put json variable on the http body
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Error while updating item");
+                }
             }
 
-            ModelState.AddModelError("", "Error while deleting item");
+            return View(item);
+        }
+
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            if (id <= 0) return BadRequest();
+
+            var response = await _client.DeleteAsync($"https://localhost:7069/api/Item/{id}");
+            if (response.IsSuccessStatusCode) return RedirectToAction("Index");
+
             return RedirectToAction("Index");
         }
+
+        //public async Task<IActionResult> DeleteItem(int id)
+        //{
+        //    if (id <= 0) return BadRequest();
+
+        //    var response = await _client.GetAsync($"https://localhost:7069/api/Item/{id}");
+        //    if (!response.IsSuccessStatusCode) return NotFound();
+
+        //    var json = await response.Content.ReadAsStringAsync();
+        //    var item = JsonConvert.DeserializeObject<Item>(json);
+
+        //    return View(item);
+        //}
+
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> ConfirmDelete(int id)
+        //{
+        //    if (id >= 0) return BadRequest();
+
+        //    var response = await _client.DeleteAsync($"https://localhost:7069/api/Item/{id}");
+        //    if (response.IsSuccessStatusCode) return RedirectToAction("Index");
+
+        //    return RedirectToAction("Index");
+
+        //}
     }
 }

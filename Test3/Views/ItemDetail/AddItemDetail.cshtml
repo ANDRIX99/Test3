@@ -1,0 +1,12 @@
+﻿@model ItemDetailView
+
+<h1>Add new Item detail</h1>
+
+<form asp-action="AddItemDetail" method="post">
+	<select asp-for="@Model.ItemId" asp-items="@Model.Items" >
+	</select>
+	<input type="number" placeholder="Amount" step="0.01" name="Amount" asp-for="Amount" />
+	<select asp-for="@Model.IdItem" asp-items="@Model.Items">
+	</select>
+	<input type="submit" />
+</form>

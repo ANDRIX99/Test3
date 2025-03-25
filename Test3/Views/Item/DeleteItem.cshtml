@@ -8,8 +8,8 @@
 
 <p>Are u sure to delete item: <strong>@Model.Nome</strong> </p>
 
-<form asp-action="DeleteItem" method="post" >
-	<input type="hidden" name="Id" value="@Model.Id" />
+<form asp-action="ConfirmDelete" method="post" >
+	<input type="hidden" name="id" value="@Model.Id" />
 	<input type="submit" />
 </form>
 

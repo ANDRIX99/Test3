@@ -13,6 +13,6 @@
 <ul>
 	@foreach (var item in Model)
 	{
-		<li>@item.Nome <a asp-controller="Item" asp-action="Detail">Dettagli</a> <a asp-controller="Item" asp-action="DeleteItem" >Delete</a> <a asp-controller="Item" asp-action="EditItem" >Edit</a></li>
+		<li>@item.Nome <a asp-controller="Item" asp-action="Detail" asp-route-id="@item.Id">Dettagli</a> <a asp-controller="Item" asp-action="DeleteItem" asp-route-id="@item.Id">Delete</a> <a asp-controller="Item" asp-action="EditItem" asp-route-id="@item.Id" >Edit</a></li>
 	}
 </ul>

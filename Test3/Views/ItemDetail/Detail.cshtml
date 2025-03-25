@@ -1,0 +1,35 @@
+﻿@model ItemDetailViewName
+
+<h2>Dettagli Item</h2>
+
+@if (Model.ItemNames != null && Model.ItemNames.Any())
+{
+    <h3>Nomi Item:</h3>
+    /* <ul>
+    @foreach (var item in Model.ItemNames)
+        {
+            <li>@item.nome</li>  <!-- Stampa il nome dell'item -->
+            <li>@item.amount</li>
+        }
+    </ul> */
+
+    <table>
+        <tr>
+            <td>Nome</td>
+            <td>Amount</td>
+        </tr>
+        @foreach (var item in Model.ItemNames)
+        {
+            <tr>
+                <td>@item.nome</td>
+                <td>@item.amount</td>
+            </tr>
+        }
+    </table>
+    <a asp-controller="ItemDetail" asp-action="Index" >Home</a>
+}
+else
+{
+    <p>Non c'è nessun dettaglio</p>
+    <a asp-controller="ItemDetail" asp-action="Index">Home</a>
+}
