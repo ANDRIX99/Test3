@@ -23,6 +23,9 @@ namespace Test3.Controllers
             return View(items);
         }
 
+        // Used to add new ItemDetail of an item
+        // for example: pasta is not an ingredient and then we add only the amount of pasta in the recipe
+        // for example: flower is an ingredient and the we add the amount of flower we need to make pasta
         public async Task<IActionResult> AddItemDetail(ItemDetail item)
         {
             var response = await _client.GetAsync($"https://localhost:7069/api/Item");
@@ -74,7 +77,7 @@ namespace Test3.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Detail(int id)
+        public async Task<IActionResult> Detail(int id) // Get detail of itemDetail for example pasta detail are flower, water and relative amount
         {
             //var itemNames = await _client.GetFromJsonAsync<List<ItemName>>($"https://localhost:7069/api/ItemDetail/detail/{id}");
 
