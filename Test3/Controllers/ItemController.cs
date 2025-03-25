@@ -8,6 +8,7 @@ namespace Test3.Controllers
 {
     public class ItemController : Controller
     {
+        // HttpClient is used to send HTTP requests and receive HTTP responses from a web service
         private readonly HttpClient _client;
 
         public ItemController(HttpClient client)
@@ -38,6 +39,7 @@ namespace Test3.Controllers
             return View(item);
         }
 
+        // Used to add new item like flour, pasta, etc
         public IActionResult AddItem()
         {
             return View();
@@ -61,6 +63,7 @@ namespace Test3.Controllers
             return View(newItem);
         }
 
+        // user can edit item name like flour to wheat flour
         public async Task<IActionResult> EditItem(int id)
         {
             if (id <= 0) return BadRequest();
@@ -83,16 +86,10 @@ namespace Test3.Controllers
             {
                 var json = JsonConvert.SerializeObject(item);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _client.PutAsync($"https://localhost:7069/api/Item/{id}", content);  // put json variable on the http body
+                var response = await _client.PutAsync($"https://localhost:7069/api/Item/{id}", content);  // put content on json body and then send to api
 
-                if (response.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Error while updating item");
-                }
+                if (response.IsSuccessStatusCode) return RedirectToAction("Index");
+                else ModelState.AddModelError(string.Empty, "Error while updating item");
             }
 
             return View(item);
@@ -107,31 +104,5 @@ namespace Test3.Controllers
 
             return RedirectToAction("Index");
         }
-
-        //public async Task<IActionResult> DeleteItem(int id)
-        //{
-        //    if (id <= 0) return BadRequest();
-
-        //    var response = await _client.GetAsync($"https://localhost:7069/api/Item/{id}");
-        //    if (!response.IsSuccessStatusCode) return NotFound();
-
-        //    var json = await response.Content.ReadAsStringAsync();
-        //    var item = JsonConvert.DeserializeObject<Item>(json);
-
-        //    return View(item);
-        //}
-
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> ConfirmDelete(int id)
-        //{
-        //    if (id >= 0) return BadRequest();
-
-        //    var response = await _client.DeleteAsync($"https://localhost:7069/api/Item/{id}");
-        //    if (response.IsSuccessStatusCode) return RedirectToAction("Index");
-
-        //    return RedirectToAction("Index");
-
-        //}
     }
 }

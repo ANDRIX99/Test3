@@ -25,7 +25,7 @@ namespace Test3.Controllers
 
         // Used to add new ItemDetail of an item
         // for example: pasta is not an ingredient and then we add only the amount of pasta in the recipe
-        // for example: flower is an ingredient and the we add the amount of flower we need to make pasta
+        // for example: flour is an ingredient and the we add the amount of flour we need to make pasta
         public async Task<IActionResult> AddItemDetail(ItemDetail item)
         {
             var response = await _client.GetAsync($"https://localhost:7069/api/Item");
@@ -60,7 +60,7 @@ namespace Test3.Controllers
 
                 foreach (var error in errors)
                 {
-                    // Ogni errore associato alla proprietà 'key'
+                    // Every error associated with the 'key' property
                     Console.WriteLine($"Error on {key}: {error.ErrorMessage}");
                 }
             }
