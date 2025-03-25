@@ -95,6 +95,7 @@ namespace Test3.Controllers
             return View(item);
         }
 
+        // user can delete item
         public async Task<IActionResult> DeleteItem(int id)
         {
             if (id <= 0) return BadRequest();
