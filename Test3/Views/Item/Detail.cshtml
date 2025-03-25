@@ -1,8 +1,19 @@
-﻿@model Item
+﻿@model ItemList
 
 @{
 	ViewData["Title"] = "Item detail";
 }
 
 <h1>Item detail</h1>
-<p>Nome: @Model.Nome </p>
+<p>Nome: @Model.item.Id </p>
+
+<!-- Getting all data I need to create new Item detail -->
+<form asp-action="Detail" method="post" >
+	<select asp-for="@Model.itemDetail.ItemId" asp-items="@Model.Items" ></select>
+	<input type="number" step="0.01" placeholder="Amount" name="Amount" asp-for="@Model.itemDetail.Amount" />
+	<input type="submit" />
+</form>
+
+<!-- TODO: update everytime a list with all ItemDetail -->
+
+<a asp-controller="Item" asp-action="Index" >Undo</a>

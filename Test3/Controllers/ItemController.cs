@@ -1,8 +1,10 @@
-﻿using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data;
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Test3.Models;
+
 
 namespace Test3.Controllers
 {
@@ -25,18 +27,37 @@ namespace Test3.Controllers
             return View(items);
         }
 
+        //public async Task<IActionResult> Detail(int id)
+        //{
+        //    if (id <= 0) return BadRequest();
+
+        //    var response = await _client.GetAsync($"https://localhost:7069/api/Item/{id}");
+
+        //    if (!response.IsSuccessStatusCode) return NotFound();
+
+        //    var json = await response.Content.ReadAsStringAsync();
+        //    var item = JsonConvert.DeserializeObject<Item>(json);
+
+        //    return View(item);
+        //}
+
         public async Task<IActionResult> Detail(int id)
         {
             if (id <= 0) return BadRequest();
 
-            var response = await _client.GetAsync($"https://localhost:7069/api/Item/{id}");
-
+            var response = await _client.GetAsync($"https://localhost:7069/api/Item");
             if (!response.IsSuccessStatusCode) return NotFound();
 
-            var json = await response.Content.ReadAsStringAsync();
-            var item = JsonConvert.DeserializeObject<Item>(json);
+            string responseBody = await response.Content.ReadAsStringAsync();
+            var items = JsonConvert.DeserializeObject<List<Item>>(responseBody);
 
-            return View(item);
+            // Populating items for the select form
+            var viewModel = new ItemList
+            {
+                Items = new SelectList(items, "Id", "Nome")
+            };
+
+            return View(viewModel);
         }
 
         // Used to add new item like flour, pasta, etc
