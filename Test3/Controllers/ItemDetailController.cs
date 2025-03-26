@@ -81,20 +81,42 @@ namespace Test3.Controllers
         {
             //var itemNames = await _client.GetFromJsonAsync<List<ItemName>>($"https://localhost:7069/api/ItemDetail/detail/{id}");
 
+            // Get detail of that item
             var response = await _client.GetAsync($"https://localhost:7069/api/ItemDetail/detail/{id}");
-            var json = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("JSON ricevuto: " + json);
-            Console.WriteLine("Tipo di json: " + json.GetType());
-            var itemNames = JsonConvert.DeserializeObject<List<ItemName>>(json);
+            if (!response.IsSuccessStatusCode) return NotFound();   // if item doesn't exists
 
-            if (itemNames == null) return NotFound();
+            var item = await response.Content.ReadFromJsonAsync<ItemDetail>();
+            var detailsResponse = await _client.GetAsync($"https://localhost:7069/api/Item");
+            var itemDetails = new List<ItemDetailDto>();
 
-            var itemDetailViewName = new ItemDetailViewName
-            { 
-                ItemNames = itemNames
+            if (detailsResponse.IsSuccessStatusCode) itemDetails = await detailsResponse.Content.ReadFromJsonAsync<List<ItemDetailDto>>();
+            var viewModel = new ItemDetailEditView
+            {
+                ItemId = item.Id,
+                ItemName = item.Nome,
+                ItemDetails = itemDetails
             };
 
-            return View(itemDetailViewName);
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveChanges(ItemDetailEditView model)
+        {
+            if (!ModelState.IsValid) return View("Edit", model);
+
+            foreach (var detail in model.ItemDetails)
+            {
+                var response = await _client.PutAsJsonAsync($"https://localhost:7069/ItemDetail/{detail.Id}", detail);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError("", "Error during updating");
+                    return View("Edit", model);
+                }
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

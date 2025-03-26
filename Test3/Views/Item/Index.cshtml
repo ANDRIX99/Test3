@@ -10,9 +10,32 @@
 	<a asp-controller="Item" asp-action="AddItem" >Aggiungi</a>
 </div>
 
-<ul>
+<!-- <ul>
+@foreach (var item in Model)
+{
+	<li>@item.Nome <a asp-controller="Item" asp-action="Detail" asp-route-id="@item.Id">Dettagli</a> <a asp-controller="Item" asp-action="DeleteItem" asp-route-id="@item.Id">Delete</a> <a asp-controller="Item" asp-action="EditItem" asp-route-id="@item.Id" >Edit</a></li>
+}
+</ul> -->
+
+<table>
+	<tr>
+		<td>Nome</td>
+	</tr>
 	@foreach (var item in Model)
 	{
-		<li>@item.Nome <a asp-controller="Item" asp-action="Detail" asp-route-id="@item.Id">Dettagli</a> <a asp-controller="Item" asp-action="DeleteItem" asp-route-id="@item.Id">Delete</a> <a asp-controller="Item" asp-action="EditItem" asp-route-id="@item.Id" >Edit</a></li>
+		<tr>
+			<td>@item.Nome</td>
+			<td>
+				<a asp-controller="Item" asp-action="Detail" asp-route-id="@item.Id">Detail</a>
+			</td>
+			<td>
+				<a asp-controller="Item" asp-action="DeleteItem" asp-route-id="@item.Id">Delete</a>
+			</td>
+			<td>
+				<a asp-controller="Item" asp-action="EditItem" asp-route-id="@item.Id">Edit</a>
+			</td>
+		</tr>
 	}
-</ul>
+</table>
+
+<a asp-controller="Home" asp-action="Index" >Return to home</a>

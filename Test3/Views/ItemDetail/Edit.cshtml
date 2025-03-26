@@ -1,0 +1,26 @@
+﻿@model ItemDetailEditView
+
+<h2>Modifica @Model.ItemName</h2>
+
+<form asp-action="SaveChanges" method="post" >
+	<input type="hidden" asp-for="ItemId" />
+	<table>
+		<tbody>
+			@for (int i = 0; i < Model.ItemDetails.Count; i++)
+			{
+				<tr>
+					<td>
+						<input type="hidden" asp-for="ItemDetails[i].Id" />
+						<input type="hidden" asp-for="ItemDetails[i].ItemId" />
+						@Model.ItemDetails[i].Ingredient
+					</td>
+					<td>
+						<input type="number" asp-for="ItemDetails[i].Amount" class="form-control" />
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<button type="submit" class="btn btn-primary">Save changes</button>
+	<a asp-controller="ItemDetail" asp-action="Index" >Undo</a>
+</form>

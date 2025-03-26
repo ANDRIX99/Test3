@@ -45,19 +45,26 @@ namespace Test3.Controllers
         {
             if (id <= 0) return BadRequest();
 
-            var response = await _client.GetAsync($"https://localhost:7069/api/Item");
+            var response = await _client.GetAsync($"https://localhost:7069/api/Item/{id}");
             if (!response.IsSuccessStatusCode) return NotFound();
 
             string responseBody = await response.Content.ReadAsStringAsync();
-            var items = JsonConvert.DeserializeObject<List<Item>>(responseBody);
+            var items = JsonConvert.DeserializeObject<Item>(responseBody);
 
             // Populating items for the select form
-            var viewModel = new ItemList
+            /*var viewModel = new ItemList
             {
                 Items = new SelectList(items, "Id", "Nome")
-            };
+            };*/
 
-            return View(viewModel);
+            // detail of the item
+            var response2 = await _client.GetAsync($"https://localhost:7069/api/ItemDetail/detail/{id}");
+            if (!response2.IsSuccessStatusCode) return NotFound();
+
+            string responseBody2 = await response2.Content.ReadAsStringAsync();
+            var items2 = JsonConvert.DeserializeObject<List<ItemDetailList>>(responseBody2);
+
+            return View((items, items2));
         }
 
         // Used to add new item like flour, pasta, etc
@@ -100,13 +107,13 @@ namespace Test3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditItem(int id, Item item)
+        public async Task<IActionResult> EditItem(int id, Item item)    // i need to use ItemDetailView model
         {
             if (id != item.Id) return BadRequest();
             if (ModelState.IsValid)
             {
                 var json = JsonConvert.SerializeObject(item);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
                 var response = await _client.PutAsync($"https://localhost:7069/api/Item/{id}", content);  // put content on json body and then send to api
 
                 if (response.IsSuccessStatusCode) return RedirectToAction("Index");
